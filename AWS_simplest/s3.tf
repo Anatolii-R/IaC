@@ -8,7 +8,7 @@ resource "aws_s3_bucket" "web_bucket" {
 
 }
 
-resource "aws_s3_bucket_acl" "bucket_acl"{
+resource "aws_s3_bucket_acl" "bucket_acl" {
   bucket = aws_s3_bucket.web_bucket.id
   acl    = "private"
 }
@@ -59,19 +59,14 @@ resource "aws_s3_bucket_policy" "web_bucket_policy" {
 
 ## aws_s3_object
 
-resource "aws_s3_object" "website" {
+resource "aws_s3_object" "website_content" {
+  for_each = {
+    website = "/website/index.html"
+    logo    = "/website/Globo_logo_Vert.png"
+  }
   bucket = aws_s3_bucket.web_bucket.bucket
-  key    = "/website/index.html"
-  source = "./website/index.html"
-
-  tags = local.common_tags
-
-}
-
-resource "aws_s3_object" "graphic" {
-  bucket = aws_s3_bucket.web_bucket.bucket
-  key    = "/website/Globo_logo_Vert.png"
-  source = "./website/Globo_logo_Vert.png"
+  key    = each.value
+  source = ".${each.value}"
 
   tags = local.common_tags
 
